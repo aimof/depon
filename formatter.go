@@ -1,6 +1,7 @@
 package depon
 
 import (
+	"errors"
 	"os"
 	"os/exec"
 	"strings"
@@ -46,4 +47,21 @@ func (f Formatter) CountAll() map[string]CountFormat {
 		countMap[key] = CountFormat{Parents: len(value.parents), Children: len(value.children)}
 	}
 	return countMap
+}
+
+// ShowNode return node detail info.
+func (f Formatter) ShowNode(s string) (im, ex []string, err error) {
+	n, ok := f.tree.allNodes[s]
+	if !ok {
+		return nil, nil, errors.New("package doesn't exist")
+	}
+	im = make([]string, 0, len(n.children))
+	ex = make([]string, 0, len(n.parents))
+	for name := range n.children {
+		im = append(im, name)
+	}
+	for name := range n.parents {
+		ex = append(ex, name)
+	}
+	return im, ex, nil
 }
